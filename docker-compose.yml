@@ -25,3 +25,14 @@ services:
       - redis
     volumes:
       - .:/app
+
+  flower:
+    image: mher/flower
+    container_name: flower_dashboard
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+

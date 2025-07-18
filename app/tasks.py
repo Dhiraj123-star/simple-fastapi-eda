@@ -1,11 +1,15 @@
 from celery import Celery,Task
 from celery.exceptions import Retry
 import time
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 celery_app = Celery(
     "simple_fastapi_eda",
-    broker="redis://redis:6379/0",
-    backend="db+sqlite:///results.sqlite3",  # SQLite as result backend
+    broker=os.getenv("REDIS_BROKER_URL"),
+    backend=f"db+sqlite:///{os.getenv('RESULT_DB')}",
 )
 
 class BaseTaskWithRetry(Task):

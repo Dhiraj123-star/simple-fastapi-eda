@@ -1,69 +1,134 @@
 
-# 🚀 Simple FastAPI EDA
 
-A production-ready, beginner-friendly **Event-Driven Architecture (EDA)** starter project built with **FastAPI**, **Celery**, **Redis**, and **Docker**. Designed for showcasing background task processing with real-world features like task history, retry mechanisms, and result persistence.
+# 🚀 Simple FastAPI EDA with Auth & Persistence
 
----
-
-## ⚙️ Core Functionality
-
-- ✅ **Asynchronous Task Processing** – Submit long-running tasks via `/submit` endpoint.
-- 📍 **Task Status Tracking** – Get task status and result using `/status/{task_id}`.
-- 🧾 **Task History Endpoint** – View all completed task results from SQLite using `/history`.
-- ♻️ **Automatic Retry Mechanism** – Tasks will automatically retry if failures occur.
-- 💾 **Persistent Result Storage** – Results are saved in a SQLite database.
-- 🌸 **Monitoring with Flower** – Real-time task queue monitoring via a UI (`localhost:5555`).
+A production-grade, beginner-friendly **Event-Driven Architecture (EDA)** starter project using **FastAPI**, **Celery**, **Redis**, and **Docker**, now enhanced with **JWT authentication**, **task retries**, **task history**, and **persistent result storage** in **SQLite3**. Perfect for showcasing real-world async systems in interviews or demos.
 
 ---
 
-## 🧰 Tech Stack
+## ⚙️ Core Features
 
-| Component  | Purpose                              |
-|------------|--------------------------------------|
-| 🚀 FastAPI  | Web framework for REST APIs          |
-| ⚙️ Celery   | Distributed task queue               |
-| 🧠 Redis    | Message broker for task queuing      |
-| 🐳 Docker   | Containerization                     |
-| 🐍 SQLite3 | Store task metadata and results       |
-| 🌸 Flower   | Celery monitoring dashboard          |
+* ✅ **Asynchronous Task Processing**
+  Submit long-running tasks via `/submit` endpoint using Celery.
 
----
+* 🔐 **JWT Authentication for Protected Routes**
+  Secure all API endpoints (`/submit`, `/status/{task_id}`, `/history`) with token-based access.
 
-# Build and start all services
-docker compose up --build
+* 📍 **Task Status Tracking**
+  Retrieve task result and execution state using `/status/{task_id}`.
 
+* 🧾 **Task History Endpoint**
+  View a list of all completed task results from the SQLite DB via `/history`.
 
----
+* ♻️ **Automatic Retry Mechanism**
+  Automatically retries failed tasks (with delay and max retries).
 
-## 🌐 API Endpoints
+* 💾 **Persistent Result Storage**
+  All tasks and results are saved in SQLite3 for historical lookup.
 
-| Method | Endpoint            | Description                     |
-| ------ | ------------------- | ------------------------------- |
-| POST   | `/submit`           | Submit a new background task    |
-| GET    | `/status/{task_id}` | Check the status of a task      |
-| GET    | `/history`          | View all completed task results |
+* 🌸 **Real-Time Monitoring with Flower**
+  Visualize task queues in your browser at `localhost:5555`.
 
 ---
 
-## 📈 Monitoring
+## 🧰 Tech Stack Overview
 
-You can monitor task queues using **Flower UI**:
+| Component  | Role                                           |
+| ---------- | ---------------------------------------------- |
+| 🚀 FastAPI | API server and route handling                  |
+| ⚙️ Celery  | Task queue & background execution engine       |
+| 🧠 Redis   | Message broker for Celery tasks                |
+| 🐳 Docker  | Containerization for reproducible environments |
+| 🐍 SQLite3 | Persistent task metadata + result storage      |
+| 🌸 Flower  | Celery web-based monitoring dashboard          |
+| 🔑 PyJWT   | JWT-based authentication for API access        |
+
+---
+
+## 🔐 Authentication
+
+All endpoints require a valid JWT token in the `Authorization` header:
+
+```http
+Authorization: Bearer <your_token>
+```
+
+### Sample Token for Testing
 
 ```bash
+curl -X POST http://localhost:8000/token \
+     -H "Content-Type: application/json" \
+     -d '{"username": "testuser", "password": "testpass"}'
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Build and start all services
+
+```bash
+docker compose up --build
+```
+
+### 2️⃣ Get JWT Token
+
+```bash
+curl -X POST http://localhost:8000/token \
+     -H "Content-Type: application/json" \
+     -d '{"username": "testuser", "password": "testpass"}'
+```
+
+### 3️⃣ Submit a Task
+
+```bash
+curl -X POST http://localhost:8000/submit \
+     -H "Authorization: Bearer <token>" \
+     -H "Content-Type: application/json" \
+     -d '{"data": "your task input"}'
+```
+
+### 4️⃣ Check Task Status
+
+```bash
+curl -X GET http://localhost:8000/status/<task_id> \
+     -H "Authorization: Bearer <token>"
+```
+
+### 5️⃣ View Task History
+
+```bash
+curl -X GET http://localhost:8000/history \
+     -H "Authorization: Bearer <token>"
+```
+
+---
+
+## 🧪 Task Retry Behavior
+
+Each Celery task is automatically retried if it fails due to transient issues.
+
+* 🔁 **Max Retries**: 3
+* ⏱️ **Retry Delay**: 10 seconds
+
+---
+
+## 🌸 Monitor with Flower
+
+Access Flower UI for task queue monitoring:
+
+```
 http://localhost:5555
 ```
 
 ---
 
-## 👨‍💼 Who Is This For?
+## 🧑‍💼 Ideal For:
 
-This project is perfect for:
-
-* ✅ Developers learning **EDA and background processing**
-* 🚀 Candidates building **technical portfolios**
-* 💼 Engineers preparing for **interviews and demos**
-* 🧪 Those experimenting with **Celery + FastAPI architecture**
+* 💼 Developers preparing for **interviews or demos**
+* 🎓 Students and juniors learning **EDA and background tasks**
+* 🏗️ Engineers designing **scalable async systems**
+* 📦 Candidates showcasing **production-grade Dockerized APIs**
 
 ---
-
 
